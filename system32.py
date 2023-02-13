@@ -202,7 +202,7 @@ developer tools
 system clear settings -clears and redoes settings
 system open sys -opens system file incase you want to mess with it but its already perfect :)
 system open user -opens your files for easy handleing
-system say settings -writes out current settings
+system read settings -writes out current settings
 
 vars can be made into lists by separating values in a var with |
 duetsch = hallo|wie_gehts?
