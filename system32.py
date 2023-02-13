@@ -1,5 +1,6 @@
 import os.path
 import os
+import time
 
 pastCmd = list([])
 
@@ -13,6 +14,7 @@ listindex = list([])
 badChar = ("{\}|/~`[] ")
 alphabet = ("abcdefghifklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 decimal = ("0","1","2","3","4","5","6","7","8","9")
+writingsys = list("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
 
 global directory
 directory = "userfiles/"
@@ -101,9 +103,11 @@ def compilecds(command):
         runPar[2] = cmdPar[2]
         for i in range(len(cmdPar) - 3):
             runPar[2] += " " + cmdPar[i + 3]
-    elif(cmdPar[0] == "child"):
-        runPar[0] = "child"
     elif(cmdPar[0] == "input"):
+        runPar[1] = cmdPar[1]
+        for i in range(len(cmdPar) - 2):
+            runPar[1] += " " + cmdPar[i + 2]
+    elif(cmdPar[0] == "bash"):
         runPar[1] = cmdPar[1]
         for i in range(len(cmdPar) - 2):
             runPar[1] += " " + cmdPar[i + 2]
@@ -138,17 +142,6 @@ def compilecds(command):
             runPar[2] += " " + cmdPar[i + 3]
     runCmd(runPar[0], runPar[1], runPar[2], runPar[3])
 
-def FOrI(thing,isStringOK):
-    if(thing in alphabet):
-        if(isStringOK):
-            return str(thing)
-        else:
-            cdsError("inputed string instead of number")
-    elif("." in thing):
-        return float(thing)
-    else:
-        return int(thing)
-
 def valof(thing):
     #if list
     if(":" in thing):
@@ -173,6 +166,15 @@ def valof(thing):
             else:
                 return int(thing)
 def runCmd(x,y,z,t):
+
+    file = open("usersettings")
+    data = list([])
+    for line in file:
+        data.append(line.strip())
+    userPassword = dencode(data[0])
+    userDesign = dencode(data[2])
+    userUsername = dencode(data[1])
+
     if(x == "help"):
 
         print("""help -gives you info of commands
@@ -191,6 +193,16 @@ if (var) (statement) (var) (command) -if whatever then do command
 // (comment) -system skips this command
 repeat (var) (command) -repeats command var times
 open (folder) -opens folder and changes directory
+input (question) -variable for this is REPLY
+bash (command) -input a bash command
+wait (seconds) -duh
+close -reverts to parent folder
+
+developer tools
+system clear settings -clears and redoes settings
+system open sys -opens system file incase you want to mess with it but its already perfect :)
+system open user -opens your files for easy handleing
+system say settings -writes out current settings
 
 vars can be made into lists by separating values in a var with |
 duetsch = hallo|wie_gehts?
@@ -309,8 +321,10 @@ helloworld = hello ++ world
                 vardata.append(z)
         
     elif(x == "say"):
-        
-        print(valof(y))
+        if(y == ''):
+            print()
+        else:
+            print(valof(y))
         
     elif(x == "new"):
         
@@ -537,15 +551,18 @@ helloworld = hello ++ world
     
     elif(x == "input"):
         vardata[varname.index("REPLY")] = input(y)
-        for i in range(len(t.split(";"))):
-            if(t.split(";")[i] != ""):
-                compilecds(t.split(";")[i])
+        for i in range(len(str(t).split(";"))):
+            if(str(t).split(";")[i] != ""):
+                compilecds(str(t).split(";")[i])
     
     elif(x == "repeat"):
-        for i in range(FOrI(vardata[varname.index(y)],False)):
-            for i in range(len(z.split(";"))):
-                if(z.split(";")[i] != ""):
-                    compilecds(z.split(";")[i])
+        if(type(valOf(y)) == type(5)):
+            for i in range(valOf(y)):
+                for i in range(len(z.split(";"))):
+                    if(z.split(";")[i] != ""):
+                        compilecds(z.split(";")[i])
+        else:
+            cdsError("invalid input type")
     elif(x == "open"):
         if(y[len(y)-1] == "/"):
             if(os.path.exists(directory + y)):
@@ -558,14 +575,55 @@ helloworld = hello ++ world
             else:
                 cdsError("path does not exist")
     elif(x == "close"):
-        dirChange(directory.split(directory.split("/")[len(directory.split("/"))-2])[0])
+        if(directory != "userfiles/"):
+            dirChange(directory.split(directory.split("/")[len(directory.split("/"))-2])[0])
+    elif(x == "sleep"):
+        time.sleep(valof(y))
     elif(x == "append"):
         vardata[varname.index(y)] += "|" + z
+    elif(x == "system"):
+        if(y == "open"):
+            if(z == "sys"):
+                password = input("Password: ")
+                if(password == userPassword):
+                    os.system("code system32.py")
+            elif(z == "user"):
+                password = input("Password: ")
+                if(password == userPassword):
+                    os.system("code userfiles")
+        elif(y == "read"):
+            if(z == "settings"):
+                password = input("Password: ")
+                if(password == userPassword):
+                    print()
+                    print("Username : " + userUsername)
+                    print("Password : " + userPassword)
+                    print("Theme    : " + userDesign)
+        elif(y == "clear"):
+            if(z == "settings"):
+                password = input("Password: ")
+                if(password == userPassword):
+                    file = open("usersettings","a")
+                    file.truncate(0)
+                    startup()
+                    file = open("usersettings", 'r')
+                    data = list([])
+                    for line in file:
+                        if(line.strip() != ""):
+                            data.append(line.strip())
+                    userPassword = dencode(data[0])
+                    userUsername = dencode(data[1])
+                    userDesign = dencode(data[2])
+    elif(x == "bash"):
+        os.system(y)
     else:
         cdsError("command unrecognized " + x)
 
 def cdsError(msg):
-    print("\n\033[1;31m! " + msg + " !\033[1;0m\n")
+    if(userDesign != "windows"):
+        print("\n\033[1;31m! " + msg + " !\033[1;0m\n")
+    else:
+        print("\n\033[1;31m! " + msg + " !\033[1;37m\n")
 
 def debug(thing):
     print(thing)
@@ -574,13 +632,117 @@ def dirChange(newDir):
     global directory
     directory = str(newDir)
 
+def dencode(msg):
+    Return = list("")
+    for i in range(len(list(msg))):
+        Return.append(writingsys[int(len(writingsys) - 1 - writingsys.index(list(msg)[i]))])
+    return "".join(Return)
+
+def startup():
+    file = open("usersettings", 'r')
+    data = list([])
+    for line in file:
+        if(line.strip() != ""):
+            data.append(line.strip())
+    file = open("usersettings", 'a')
+    if(data == list([])):
+        print("looks like its your first time here!")
+
+        def passwordset():
+            password = input("please make a password: ")
+            print("you selected '" + password + "' as your password")
+            yep = input("correct? (Y/N) >")
+            if(yep in ("y","Y")):
+                file.write(dencode(password))
+                userPassword = password
+            elif(yep in ("n","N")):
+                passwordset()
+            else:
+                cdsError("unknown input")
+                passwordset()
+        def usernameset():
+            username = input("please make a username: ")
+            print("you selected '" + username + "' as your username")
+            yep = input("correct? (Y/N) >")
+            if(yep in ("y","Y")):
+                file.write("\n" + dencode(username))
+                userUsername = username
+            elif(yep in ("n","N")):
+                usernameset()
+            else:
+                cdsError("unknown input")
+                usernameset()
+        def bashset():
+            likebash = input("do you want dotCDS to look like linux terminal? (Y/N): ")
+            if(likebash in ("y","Y")):
+                file.write("\n" + dencode("linux"))
+                userDesign = "linux"
+            elif(likebash in ("n","N")):
+                likewindow = input("do you want dotCDS to look like windows terminal? (Y/N): ")
+                if(likewindow in ("y","Y")):
+                    file.write("\n" + dencode("windows"))
+                    userDesign = "windows"
+                elif(likewindow in ("n","N")):
+                    likenorm = input("do you want dotCDS's default look? (Y/N): ")
+                    if(likenorm in ("y","Y")):
+                        file.write("\n" + dencode("default"))
+                        userDesign = "default"
+                    elif(likenorm in ("n","N")):
+                        bashset()
+                    else:
+                        cdsError("unknown input")
+                        bashset()
+                else:
+                    cdsError("unknown input")
+                    bashset()
+            else:
+                cdsError("unknown input")
+                bashset()
+
+        passwordset()
+        usernameset()
+        bashset()
+
+        print("thats it! off you go now")
+        time.sleep(2)
+        os.system("clear")
+    else:
+        userPassword = dencode(data[0])
+        userUsername = dencode(data[1])
+        userDesign = dencode(data[2])
+    file.close()
+startup()
+file = open("usersettings", 'r')
+data = list([])
+for line in file:
+    if(line.strip() != ""):
+        data.append(line.strip())
+userPassword = dencode(data[0])
+userUsername = dencode(data[1])
+userDesign = dencode(data[2])
+
 getGlobeVar()
-print("""dotCDS 1.0 (system32, Jan 28 2023, 9:12) 
+if(userDesign == "windows"):
+    print("""\033[1;37mdotCDS 1.0 (system32, Jan 28 2023, 9:12)
 [Powered and run by Python3] on linux
-Type "help" if you are unsure what to do.
-""")
+Type "help" if you are unsure what to do.""")
+else:
+    print("""dotCDS 1.0 (system32, Jan 28 2023, 9:12)
+[Powered and run by Python3] on linux
+Type "help" if you are unsure what to do.""")
+print("Hello " + userUsername)
+
 while(True):
-    cmdRom = input(directory + ": >> ")
+    # dev@dotCDS:~userfiles/: >> _
+    if(userDesign == "linux"):
+        if(directory == "userfiles/"):
+            cmdRom = input("\033[1;32m" + userUsername + "@penguin:\033[1;34m~" + directory.split("userfiles/")[1] + "\033[1;0m$ ")
+        else:
+            cmdRom = input("\033[1;32m" + userUsername + "@penguin:\033[1;34m~/" + directory.split("userfiles/")[1] + "\033[1;0m$ ")
+    elif(userDesign == "windows"):
+        cmdRom = input("\033[1;37mC:\u005cUsers\u005c" + userUsername + "\u005c" + directory.split("userfiles/")[1] + ">")
+    else:
+        cmdRom = input(userUsername + ": " + directory.split("userfiles/")[1] + " >> ")
     if(cmdRom != ""):
         cZplacement = 1
         if(cmdRom[0] == ":"):
