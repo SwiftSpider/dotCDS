@@ -11,29 +11,13 @@ listdata = list([])
 listname = list([])
 listindex = list([])
 
-badChar = ("{\}|/~`[] ")
-alphabet = ("abcdefghifklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-decimal = ("0","1","2","3","4","5","6","7","8","9")
-writingsys = list("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
+alphabet = list("abcdefghifklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+decimal = list("1234567890")
+writingsys = list("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM~`!@#$%^&*()_-+={[}]|:;'<?>/")
+imgtypes = ("png", "jpeg", "ppm", "gif", "tiff","bmp","jpg")
 
 global directory
 directory = "userfiles/"
-
-def valOf(input):
-    for i in range(len(input)):
-        if(input[i] in badChar):
-            cdsError("Character not allowed " + input[i])
-        else:
-            if(input[i] in alphabet):
-                if(input in varname):
-                    return vardata[varname.index(input)]
-                else:
-                    return input
-    if("." in input):
-        return float(input)
-    else:
-        return int(input)
-            
 
 def getGlobeVar():
     file1 = open("globalvar", 'r')
@@ -149,8 +133,9 @@ def valof(thing):
     else:
         isStr = False
         for i in range(len(str(thing))):
-            if(thing[i] in list(alphabet)):
-                isStr = True
+            if(thing[i] not in list(decimal)):
+                if(thing[i] != "$"):
+                    isStr = True
         if(isStr):
             #if var
             if(thing in varname):
@@ -159,12 +144,20 @@ def valof(thing):
             else:
                 return str(thing)
         else:
-            #if float
-            if("." in list(str(thing))):
-                return float(thing)
-            #if int
+            if("$" in list(thing)):
+                #if float
+                if("." in list(str(thing))):
+                    return float(thing.split("$")[1])
+                #if int
+                else:
+                    return int(thing.split("$")[1])
             else:
-                return int(thing)
+                    #if float
+                if("." in list(str(thing))):
+                    return float(thing)
+                #if int
+                else:
+                    return int(thing)
 def runCmd(x,y,z,t):
 
     file = open("usersettings")
@@ -180,14 +173,14 @@ def runCmd(x,y,z,t):
         print("""help -gives you info of commands
 read (file) -reads the given files contents
 say (var) -writes out given variable
-write (file) (thing) -writes in a script
+write (file) (thing) -writes in a script (not recommended)
 new (type) (name) -creates new file or folder
 (var) = (value) -sets var slot to given value
 (var) = (var) (operation) (var) -math
 clear (type) (name) -clears the file/folder (if clearing screen then dont use (name)
-delete (type) (name) -deletes file/folder
-child (folder) -says the children of that folder
-run (file) -run a script in a specified language
+delete (type) (name) -deletes file/folder/image (not sure about image though)
+child -says the children of the current folder
+run (file) -run a script
 varlist -lists all var names and data
 if (var) (statement) (var) (command) -if whatever then do command
 // (comment) -system skips this command
@@ -197,6 +190,8 @@ input (question) -variable for this is REPLY
 bash (command) -input a bash command
 wait (seconds) -duh
 close -reverts to parent folder
+install (package) -installs a supported package for you
+install store -shows avialable packages
 
 developer tools
 system clear settings -clears and redoes settings
@@ -342,87 +337,87 @@ helloworld = hello ++ world
         
     elif(x == "add"):
         
-        if(type(valOf(t)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valOf(z)) in ("<class 'int'>","<class 'float'>")):
+        if(str(type(valof(t))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
                 if(y in varname):
-                    vardata[varname.index(y)] = str(valOf(z) + valOf(t))
+                    vardata[varname.index(y)] = str(valof(z) + valof(t))
                 else:
                     varname.append(y)
-                    vardata.append(str(valOf(z) + valOf(t)))
+                    vardata.append(str(valof(z) + valof(t)))
             else:
-                cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+                cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         else:
-            cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+            cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         
     elif(x == "minus"):
         
-        if(type(valOf(t)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valOf(z)) in ("<class 'int'>","<class 'float'>")):
+        if(str(type(valof(t))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
                 if(y in varname):
-                    vardata[varname.index(y)] = str(valOf(z) - valOf(t))
+                    vardata[varname.index(y)] = str(valof(z) - valof(t))
                 else:
                     varname.append(y)
-                    vardata.append(str(valOf(z) - valOf(t)))
+                    vardata.append(str(valof(z) - valof(t)))
             else:
-                cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+                cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         else:
-            cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+            cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         
     elif(x == "multiply"):
         
-        if(type(valOf(t)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valOf(z)) in ("<class 'int'>","<class 'float'>")):
+        if(str(type(valof(t))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
                 if(y in varname):
-                    vardata[varname.index(y)] = str(valOf(z) * valOf(t))
+                    vardata[varname.index(y)] = str(valof(z) * valof(t))
                 else:
                     varname.append(y)
-                    vardata.append(str(valOf(z) * valOf(t)))
+                    vardata.append(str(valof(z) * valof(t)))
             else:
-                cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+                cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         else:
-            cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+            cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         
     elif(x == "divide"):
 
-        if(type(valOf(t)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valOf(z)) in ("<class 'int'>","<class 'float'>")):
+        if(str(type(valof(t))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
                 if(y in varname):
-                    vardata[varname.index(y)] = str(valOf(z) / valOf(t))
+                    vardata[varname.index(y)] = str(valof(z) / valof(t))
                 else:
                     varname.append(y)
-                    vardata.append(str(valOf(z) / valOf(t)))
+                    vardata.append(str(valof(z) / valof(t)))
             else:
-                cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+                cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         else:
-            cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+            cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
     
     elif(x == "exponent"):
 
-        if(type(valOf(t)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valOf(z)) in ("<class 'int'>","<class 'float'>")):
+        if(str(type(valof(t))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
                 if(y in varname):
-                    vardata[varname.index(y)] = str(valOf(z) ** valOf(t))
+                    vardata[varname.index(y)] = str(valof(z) ** valof(t))
                 else:
                     varname.append(y)
-                    vardata.append(str(valOf(z) ** valOf(t)))
+                    vardata.append(str(valof(z) ** valof(t)))
             else:
-                cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+                cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         else:
-            cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+            cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
 
     elif(x == "join"):
 
-        if(type(valOf(t)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valOf(z)) in ("<class 'int'>","<class 'float'>")):
+        if(str(type(valof(t))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
                 if(y in varname):
-                    vardata[varname.index(y)] = str(valOf(z)) + str(valOf(t))
+                    vardata[varname.index(y)] = str(valof(z)) + str(valof(t))
                 else:
                     varname.append(y)
-                    vardata.append(str(valOf(z)) + str(valOf(t)))
+                    vardata.append(str(valof(z)) + str(valof(t)))
             else:
-                cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+                cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
         else:
-            cdsError("cannot do math with var type " + type(valOf(z)).split("'")[1])
+            cdsError("cannot do math with var type " + str(type(valof(z))).split("'")[1])
             
     elif(x == "clear"):
 
@@ -440,7 +435,7 @@ helloworld = hello ++ world
     elif(x == "delete"):
         
         if(os.path.exists(directory + z)):
-            if(y == "file"):
+            if(y in ("file","image")):
                 os.remove(directory + z)
             elif(y == "folder"):
                 if(len(os.listdir(directory + z)) == 0):
@@ -457,7 +452,10 @@ helloworld = hello ++ world
         romlist = list(os.listdir(directory))
         for i in range(len(romlist)):
             if("." in list(romlist[i])):
-                print("[" + str(i) + "]|s| " + romlist[i])
+                if(romlist[i].split(".")[1] in imgtypes):
+                    print("[" + str(i) + "]|i| " + romlist[i])
+                else:
+                    print("[" + str(i) + "]|s| " + romlist[i])
             else:
                 print("[" + str(i) + "]|f| " + romlist[i])
 
@@ -495,14 +493,14 @@ helloworld = hello ++ world
         pass
     
     elif(x == "ifeq"):
-        if(valof(y) == valOf(z)):
+        if(valof(y) == valof(z)):
             for i in range(len(t.split(";"))):
                 if(t.split(";")[i] != ""):
                     compilecds(t.split(";")[i])
     elif(x == "ifgt"):
-        if(type(valof(y)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valof(z)) in ("<class 'int'>","<class 'float'>")):
-                if(valof(y) > valOf(z)):
+        if(str(type(valof(y))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
+                if(valof(y) > valof(z)):
                     for i in range(len(t.split(";"))):
                         if(t.split(";")[i] != ""):
                             compilecds(t.split(";")[i])
@@ -511,9 +509,9 @@ helloworld = hello ++ world
         else:
             cdsError("cannot use in statement " + type(valof(y)).split("'")[1])
     elif(x == "iflt"):
-        if(type(valof(y)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valof(z)) in ("<class 'int'>","<class 'float'>")):
-                if(valof(y) < valOf(z)):
+        if(str(type(valof(y))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
+                if(valof(y) < valof(z)):
                     for i in range(len(t.split(";"))):
                         if(t.split(";")[i] != ""):
                             compilecds(t.split(";")[i])
@@ -522,9 +520,9 @@ helloworld = hello ++ world
         else:
             cdsError("cannot use in statement " + type(valof(y)).split("'")[1])
     elif(x == "ifge"):
-        if(type(valof(y)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valof(z)) in ("<class 'int'>","<class 'float'>")):
-                if(valof(y) >= valOf(z)):
+        if(str(type(valof(y))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
+                if(valof(y) >= valof(z)):
                     for i in range(len(t.split(";"))):
                         if(t.split(";")[i] != ""):
                             compilecds(t.split(";")[i])
@@ -533,9 +531,9 @@ helloworld = hello ++ world
         else:
             cdsError("cannot use in statement " + type(valof(y)).split("'")[1])
     elif(x == "ifle"):
-        if(type(valof(y)) in ("<class 'int'>","<class 'float'>")):
-            if(type(valof(z)) in ("<class 'int'>","<class 'float'>")):
-                if(valof(y) <= valOf(z)):
+        if(str(type(valof(y))) in ("<class 'int'>","<class 'float'>")):
+            if(str(type(valof(z))) in ("<class 'int'>","<class 'float'>")):
+                if(valof(y) <= valof(z)):
                     for i in range(len(t.split(";"))):
                         if(t.split(";")[i] != ""):
                             compilecds(t.split(";")[i])
@@ -544,7 +542,7 @@ helloworld = hello ++ world
         else:
             cdsError("cannot use in statement " + type(valof(y)).split("'")[1])
     elif(x == "ifne"):
-        if(FOrI(vardata[varname.index(y)],False) != FOrI(vardata[varname.index(y)],False)):
+        if(valof(vardata[varname.index(y)],False) != valof(vardata[varname.index(y)],False)):
             for i in range(len(t.split(";"))):
                 if(t.split(";")[i] != ""):
                     compilecds(t.split(";")[i])
@@ -556,8 +554,8 @@ helloworld = hello ++ world
                 compilecds(str(t).split(";")[i])
     
     elif(x == "repeat"):
-        if(type(valOf(y)) == type(5)):
-            for i in range(valOf(y)):
+        if(type(valof(y)) == type(5)):
+            for i in range(valof(y)):
                 for i in range(len(z.split(";"))):
                     if(z.split(";")[i] != ""):
                         compilecds(z.split(";")[i])
@@ -616,6 +614,57 @@ helloworld = hello ++ world
                     userDesign = dencode(data[2])
     elif(x == "bash"):
         os.system(y)
+    elif(x == "install"):
+        print("download will begin shortly, please type 'y' to any (Y/N) questions\n")
+        time.sleep(3)
+        if(y in ("tkinter","tk")):
+            os.system("sudo apt-get update")
+            os.system("sudo apt-get upgrade")
+            os.system("sudo apt-get install python3-tk")
+        elif(y in ("vscode","vs","code","visualstudio")):
+            os.system("sudo apt update")
+            os.system("sudo apt upgrade")
+            os.system("sudo apt install code")
+        elif(y in ("git","github")):
+            os.system("sudo apt update")
+            os.system("sudo apt upgrade")
+            os.system("sudo apt install git")
+        elif(y in ("node","js","javascript","nodejs","nodejavascript")):
+            os.system("sudo apt update")
+            os.system("sudo apt upgrade")
+            os.system("sudo apt install nodejs")
+            os.system("sudo apt install npm")
+        elif(y == "pygame"):
+            os.system("python3 -m pip install -U pygame==2.1.3 --user")
+        elif(y in ("pip","pip3")):
+            os.system("sudo apt-get update")
+            os.system("sudo apt-get upgrade")
+            os.system("sudo apt-get install python3-pip")
+        elif(y in ("pil","pillow")):
+            os.system("python3 -m pip install pillow")
+        elif(y in ("full","package","all")):
+            os.system("sudo apt update")
+            os.system("sudo apt upgrade")
+            os.system("sudo apt-get update")
+            os.system("sudo apt-get upgrade")
+            os.system("sudo apt-get install python3-pip")
+            os.system("python3 -m pip install pillow")
+            os.system("python3 -m pip install -U pygame==2.1.3 --user")
+            os.system("sudo apt install nodejs")
+            os.system("sudp apt install npm")
+            os.system("sudo apt-get install python3-tk")
+            os.system("sudo apt install code")
+            os.system("sudo apt install git")
+            print("\nJAVASCRIPT VERSION")
+            os.system("node -v")
+            os.system("npm -v")
+            print("\nPIP VERSION")
+            os.system("pip -v")
+            print()
+        elif(y in ("available","store","catalog")):
+            print("Pip\nGithub\nVSCode\nTkinter\nJavaScript\nPillow\n")
+        else:
+            cdsError("unknown program")
     else:
         cdsError("command unrecognized " + x)
 
