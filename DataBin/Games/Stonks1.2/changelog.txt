@@ -1,0 +1,26 @@
+Version 1.2 (2023/01/02)
+	-Added line of profit that displays in the graph
+	-Added the ability to take a screenshot (key: F5)
+	-Added RNG state saving
+	-Changed main menu background
+	-Fixed game seeding (was using global RNG and other parts of code interfered with it)
+	-Fixed a bizzare bug where every generated value would add twice to stock history (in a loaded game)
+	-Minor icon graphics adjustments
+
+Version 1.1 (2022/12/25)
+	-Added localisation
+	-Added Czech and English localisation
+	-Added cheat codes
+	-Added ability to confirm dialog boxes using enter key
+	-Added ability to select yes or no using enter key and escape key in dialog boxes
+	-Added dialog to confirm quitting when closing the game window
+	-Added game .ico
+	-Adjusted text entry boxes character limit
+	-Fixed settings menu not accessible from pause menu
+	-Fixed window not having any title
+	-Minor GUI padding fixes
+	-Minor GUI layout improvements
+	-Save and load menu now selects currently loaded game (if it was previously saved)
+	
+Version 1.0 (2022/03/29)
+	-Initial release
